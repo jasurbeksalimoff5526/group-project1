@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-10 animate-fade-in">
+    
+    <div class="glass p-8 md:p-12 rounded-[3.5rem] relative overflow-hidden border border-white/5 shadow-2xl">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-600/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-purple-600/10 rounded-full -ml-24 -mb-24 blur-3xl"></div>
+
+        <div class="relative flex flex-col md:flex-row items-center md:items-start gap-10">
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-[2.5rem] blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                <div class="relative w-48 h-48 rounded-[2.3rem] bg-[#0d0d0d] border border-white/10 p-2 shadow-2xl overflow-hidden">
+                    {% if user_profile.avatar %}
+                        <img src="{{ user_profile.avatar.url }}" class="w-full h-full object-cover rounded-[1.8rem]">
+                    {% else %}
+                        <div class="w-full h-full bg-indigo-900/20 flex items-center justify-center text-6xl">
+                            {{ user_profile.username|slice:":1"|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex-grow text-center md:text-left space-y-4">
+                <div class="space-y-1">
+                    <h1 class="text-5xl font-black tracking-tighter">{{ user_profile.get_full_name|default:user_profile.username }}</h1>
+                    <p class="text-indigo-400 font-bold text-lg tracking-wide">@{{ user_profile.username }}</p>
+                </div>
+
+                <p class="text-gray-400 leading-relaxed max-w-xl text-sm md:text-base italic">
+                    "{{ user_profile.bio|default:"Ushbu foydalanuvchi hali o'zi haqida ma'lumot kiritmagan. Maqolalar yozish va bilim ulashish bilan band!" }}"
+                </p>
+
+                <div class="flex flex-wrap justify-center md:justify-start gap-6 pt-4">
+                    <div class="text-center md:text-left">
+                        <span class="block text-2xl font-black text-white">{{ user_profile.posts.count }}</span>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Maqolalar</span>
+                    </div>
+                    <div class="w-[1px] h-10 bg-white/10 hidden sm:block"></div>
+                    <div class="text-center md:text-left">
+                        <span class="block text-2xl font-black text-white">0</span> {# Bu yerga jami reaksiyalar sonini qo'shish mumkin #}
+                        <span class="text-[10px] text-gray-400 uppercase tracking-[0.2em]">Reaksiyalar</span>
+                    </div>
+                </div>
+
+                {% if request.user == user_profile %}
+                <div class="pt-8 flex flex-wrap gap-4 justify-center md:justify-start">
+                    <a href="{% url 'profile_update' %}" class="px-8 py-3 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 transition-all active:scale-95 shadow-lg shadow-white/5 text-sm">
+                        Profilni tahrirlash
+                    </a>
+                    <a href="{% url 'change_password' %}" class="px-8 py-3 glass border-red-500/20 text-red-400 font-bold rounded-2xl hover:bg-red-500/10 transition-all text-sm">
+                        Xavfsizlik
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="space-y-8">
+        <h2 class="text-3xl font-black flex items-center gap-4">
+            Mening <span class="text-indigo-500">maqolalarim</span>
+            <span class="h-[2px] flex-grow bg-white/5"></span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for post in user_profile.posts.all %}
+                <div class="glass p-6 rounded-[2rem] border-white/5 hover:border-indigo-500/30 transition-all group">
+                    <div class="flex gap-6 items-center">
+                        <div class="w-24 h-24 rounded-2xl overflow-hidden shrink-0">
+                            {% if post.image %}
+                                <img src="{{ post.image.url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            {% else %}
+                                <div class="w-full h-full bg-indigo-900/20 flex items-center justify-center text-2xl">📝</div>
+                            {% endif %}
+                        </div>
+                        <div class="space-y-2">
+                            <h3 class="font-bold text-lg line-clamp-1 group-hover:text-indigo-400 transition">
+                                <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+                            </h3>
+                            <p class="text-gray-500 text-xs line-clamp-2 leading-relaxed">
+                                {{ post.content|truncatechars:80 }}
+                            </p>
+                            <div class="flex items-center gap-4 pt-2 text-[10px] font-bold text-gray-600 uppercase">
+                                <span>📅 {{ post.created_at|date:"d.m.Y" }}</span>
+                                <span>💬 {{ post.comments.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-span-full py-12 text-center glass rounded-[2rem] border-dashed border-white/10">
+                    <p class="text-gray-500 italic font-medium">Hali maqolalar yozilmagan...</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fadeIn 0.7s ease-out forwards; }
+</style>
+{% endblock %}
