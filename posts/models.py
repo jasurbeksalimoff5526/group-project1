@@ -12,7 +12,7 @@ class Category(models.Model):
         return self.name
 
 class Post(BaseModel):
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='posts')
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     content = models.TextField()

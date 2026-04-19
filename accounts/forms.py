@@ -1,33 +1,35 @@
 from .models import *
 from django import forms
-class SignupForm(forms.ModelForm):
-    password1 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-input', 
-            'placeholder': '••••••••'
-        }), 
-        label="Parol",
-        min_length=8
-    )
-    password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-input', 
-            'placeholder': '••••••••'
-        }), 
-        label="Parolni tasdiqlang"
-    )
+from django.contrib.auth.forms import UserCreationForm
+from .models import CustomUser
 
+class SignupForm(UserCreationForm):
     class Meta:
         model = CustomUser
-        # 'password'ni bu yerdan olib tashladik, chunki password1 va password2 bor
         fields = ["first_name", "last_name", "username", "email"]
         
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Nozimjon'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Qahorov'}),
-            'username': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'nozim_01'}),
-            'email': forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'misol@mail.com'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ism'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Familiya'}),
+            'username': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'username'}),
+            'email': forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'elektron pochta'}),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        self.fields['password1'].widget.attrs.update({
+            'class': 'form-input',
+            'placeholder': 'Parol'
+        })
+        self.fields['password2'].widget.attrs.update({
+            'class': 'form-input',
+            'placeholder': 'Parolni tasdiqlang'
+        })
+
+        self.fields['password1'].label = "Parol"
+        self.fields['password2'].label = "Parolni tasdiqlang"
+
 
     def clean(self):
         cleaned_data = super().clean()
@@ -38,8 +40,6 @@ class SignupForm(forms.ModelForm):
         f_name = cleaned_data.get("first_name")
         l_name = cleaned_data.get("last_name")
 
-        if p1 and p2 and p1 != p2:
-            self.add_error('password2', "Kiritilgan parollar bir-biriga mos kelmadi.")
 
         if p1:
             p1_lower = p1.lower()
@@ -91,8 +91,6 @@ class SignupForm(forms.ModelForm):
     
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if "@" not in email:
-            raise forms.ValidationError("Email da @ bolishi shart")
         if len(email) < 12:
             raise forms.ValidationError("Email kamida 12 ta elementdan iborat bo'lishi kerak")
         
@@ -100,12 +98,12 @@ class SignupForm(forms.ModelForm):
         
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
             'class': 'form-control', 
-            'placeholder': 'Email manzilingizni kiriting'
+            'placeholder': 'Username kiriting'
         }),
-        label="Email"
+        label="Username"
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
@@ -115,19 +113,6 @@ class LoginForm(forms.Form):
         label="Parol"
     )
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        # Email formatini tekshirish (Django buni o'zi ham qiladi, lekin biz qo'shimcha shartlar qo'shishimiz mumkin)
-        if email and len(email) < 5:
-            raise forms.ValidationError("Email juda qisqa.")
-        return email
-
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        if password and len(password) < 8:
-            raise forms.ValidationError("Parol kamida 8 ta belgidan iborat bo'lishi kerak.")
-        return password
-    
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:

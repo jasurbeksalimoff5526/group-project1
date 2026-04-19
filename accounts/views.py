@@ -31,12 +31,12 @@ class LoginView(View):
         return render(request, "auth/login.html", {"form": form})
 
     def post(self, request):
-        form = LoginForm(request.POST) 
+        form = LoginForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('email')
+            username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            user = authenticate(request, email=email, password=password)
-            
+            user = authenticate(request, username=username, password=password)
+
             if user is not None:
                 login(request, user)
                 return redirect("home")
@@ -47,9 +47,8 @@ class LoginView(View):
 
 
 class ProfileView(LoginRequiredMixin, View):
-    def get(self, request, id):
-        user_profile = get_object_or_404(CustomUser, id=id)
-        return render(request, "profile.html", {"user_profile": user_profile})
+    def get(self, request):
+        return render(request, "profile.html", {"user_profile": request.user})
     
 
 class ProfileUpdateView(LoginRequiredMixin, View):

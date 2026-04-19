@@ -4,7 +4,7 @@
 <div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
     <div class="glass p-8 md:p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
         <div class="absolute -top-24 -left-24 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl"></div>
-        
+
         <div class="relative">
             <span class="px-4 py-1.5 bg-indigo-500/10 text-indigo-400 font-bold rounded-full text-sm border border-indigo-500/20">
                 #{{ post.category.name }}
@@ -12,7 +12,7 @@
             <h1 class="text-4xl md:text-6xl font-black mt-6 mb-6 leading-tight tracking-tighter">
                 {{ post.title }}
             </h1>
-            
+
             <div class="flex items-center gap-4 mb-10 text-sm">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold">
                     {{ post.author.username|slice:":1"|upper }}
@@ -24,9 +24,10 @@
             </div>
 
             {% if post.image %}
-                <div class="group overflow-hidden rounded-[2rem] mb-10 shadow-2xl">
-                    <img src="{{ post.image.url }}" class="w-full object-cover group-hover:scale-105 transition duration-700">
-                </div>
+            <div class="group overflow-hidden rounded-[2rem] mb-10 shadow-2xl h-56">
+                <img src="{{ post.image.url }}"
+                     class="w-full h-full object-contain bg-black group-hover:scale-105 transition duration-700">
+            </div>
             {% endif %}
 
             <div class="text-gray-300 leading-relaxed text-lg space-y-6">
@@ -38,7 +39,8 @@
                 <form action="{% url 'add_reaction' post.pk %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="reaction_type" value="{{ code }}">
-                    <button type="submit" class="group px-5 py-2.5 glass rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 flex items-center gap-3">
+                    <button type="submit"
+                            class="group px-5 py-2.5 glass rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300 flex items-center gap-3">
                         <span class="text-xl group-hover:scale-125 transition-transform">
                             {% if code == 'LIKE' %}👍{% elif code == 'LOVE' %}❤️{% elif code == 'FIRE' %}🔥{% else %}😮{% endif %}
                         </span>
@@ -70,7 +72,7 @@
             <span class="bg-indigo-500 p-2 rounded-lg text-white text-sm">📊</span>
             {{ post.poll.question }}
         </h3>
-        
+
         <div class="space-y-6">
             {% for option in post.poll.options.all %}
             <form action="{% url 'poll_vote' option.pk %}" method="post">
@@ -81,7 +83,7 @@
                         <span class="text-indigo-400 font-black text-xs bg-indigo-500/10 px-2 py-1 rounded">{{ option.votes }} OVOZ</span>
                     </div>
                     <div class="w-full bg-white/5 h-4 rounded-full p-1 border border-white/5">
-                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 h-full rounded-full transition-all duration-1000 group-hover:from-indigo-400 group-hover:to-purple-400" 
+                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 h-full rounded-full transition-all duration-1000 group-hover:from-indigo-400 group-hover:to-purple-400"
                              style="width: {% if option.votes > 0 %}{{ option.votes }}%{% else %}2%{% endif %}">
                         </div>
                     </div>

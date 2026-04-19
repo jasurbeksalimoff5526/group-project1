@@ -11,7 +11,7 @@
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #050505;
+            background-color: #050505;z
         }
         
         .glass { 
@@ -67,7 +67,7 @@
             </a>
             
             <div class="hidden md:flex items-center space-x-6 text-[13px] font-bold uppercase tracking-widest text-gray-400">
-                <a href="{% url 'home' %}" class="nav-link hover:text-white">Maqolalar</a>
+                <a href="{% url 'post_list' %}" class="nav-link hover:text-white">Maqolalar</a>
                 <a href="#" class="nav-link hover:text-white">Hamjamiyat</a>
             </div>
         </div>
@@ -80,7 +80,7 @@
                 
                 <div class="h-8 w-[1px] bg-white/5 mx-2 hidden md:block"></div>
 
-                <a href="{% url 'profile' user.id %}" class="flex items-center gap-3 glass px-3 py-1.5 rounded-full hover:bg-white/5 transition border-white/10 group">
+                <a href="{% url 'profile'  %}" class="flex items-center gap-3 glass px-3 py-1.5 rounded-full hover:bg-white/5 transition border-white/10 group">
                     <div class="w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center text-[10px] font-black group-hover:rotate-12 transition">
                         {{ user.username|slice:":1"|upper }}
                     </div>
